@@ -36,7 +36,7 @@ latest_version() {
 }
 
 # parse commandline args
-nimble_version="stable"
+nimble_version=""
 nimble_install_dir=".nimble_runtime"
 os="Linux"
 repo_token=""
