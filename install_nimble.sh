@@ -94,11 +94,13 @@ mkdir -p "${nimble_install_dir}/bin"
 arch="x64"
 
 if [[ "$os" = "Windows" ]]; then
-  download_url="https://github.com/nim-lang/nimble/releases/download/v${nimble_version}/nimble-windows_${arch}.zip"
+  download_url="https://github.com/nim-lang/nimble/releases/download/v${nimble_version}/nimble-windows_${arch}.tar.gz"
   info "Downloading from: ${download_url}"
-  curl -sSL "${download_url}" > nimble.zip
-  unzip -j nimble.zip "nimble.exe" -d "${nimble_install_dir}/bin"
-  rm -f nimble.zip
+  curl -sSL "${download_url}"
+  tar xvz -C "${nimble_install_dir}/bin"
+  # curl -sSL "${download_url}" > nimble.zip
+  # unzip -j nimble.zip "nimble.exe" -d "${nimble_install_dir}/bin"
+  # rm -f nimble.zip
 elif [[ "$os" = "macOS" || "$os" = "Darwin" ]]; then
   download_url="https://github.com/nim-lang/nimble/releases/download/v${nimble_version}/nimble-macosx_${arch}.tar.gz"
   info "Downloading from: ${download_url}"
