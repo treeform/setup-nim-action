@@ -41,50 +41,17 @@ jobs:
           - macOS-13
           - macOS-latest
         version:
-          - 2.0.x
-          - devel
-        exclude:
-          - os: windows-latest
-            version: devel
+          - 0.16.2
+          - 0.16.3
     steps:
       - uses: actions/checkout@v4
       - uses: ./
         with:
-          nim-version: ${{ matrix.version }}
+          nimble-version: ${{ matrix.version }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Print Nim version
-        run: nim -v
       - name: Print Nimble version
         run: nimble -v
-      - name: Run build test
-        run: nimble install -Y nimjson
-      - name: Run command
-        run: nimjson -h
-
-  test-devel:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os:
-          - ubuntu-latest
-          - macOS-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./
-        with:
-          nim-version: devel
-          use-nightlies: true
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Print Nim version
-        run: nim -v
-      - name: Print Nimble version
-        run: nimble -v
-      - name: Run build test
-        run: nimble install -Y nimjson
-      - name: Run command
-        run: nimjson -h
 
   test-multi-versions:
     runs-on: ${{ matrix.os }}
@@ -93,28 +60,17 @@ jobs:
         os:
           - ubuntu-latest
         version:
-          - 1.4.x
-          - 1.6.0
-          - 1.6.x
-          - 1.x
-          - 2.0.x
-          - 2.x
-          - stable
+          - 0.16.2
+          - 0.16.3          
     steps:
       - uses: actions/checkout@v4
       - uses: ./
         with:
-          nim-version: ${{ matrix.version }}
+          nimble-version: ${{ matrix.version }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Print Nim version
-        run: nim -v
       - name: Print Nimble version
         run: nimble -v
-      - name: Run build test
-        run: nimble install -Y nimjson
-      - name: Run command
-        run: nimjson -h
 
   test-parent-directory:
     runs-on: ${{ matrix.os }}
@@ -128,15 +84,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./
         with:
-          nim-version: stable
+          nimble-version: 0.16.3
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          parent-nim-install-directory: ${{ runner.temp }}
+          parent-nimble-install-directory: ${{ runner.temp }}
 
-      - name: Print Nim version
-        run: nim -v
       - name: Print Nimble version
         run: nimble -v
-      - name: Run build test
-        run: nimble install -Y nimjson
-      - name: Run command
-        run: nimjson -h
