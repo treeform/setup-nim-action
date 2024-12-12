@@ -43,6 +43,7 @@ jobs:
         version:
           - 0.16.2
           - 0.16.3
+          - latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./
@@ -62,6 +63,7 @@ jobs:
         version:
           - 0.16.2
           - 0.16.3          
+          - latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./
