@@ -84,8 +84,8 @@ fi
 
 cd "$parent_nimble_install_dir"
 
-# get exact version if stable
-if [[ "$nimble_version" = "stable" ]]; then
+# Print available versions
+# print_available_versions
 
 # get exact version
 if [[ "$nimble_version" = "latest" ]]; then
