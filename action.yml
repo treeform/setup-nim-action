@@ -7,8 +7,9 @@ inputs:
   nimble-version:
     description: >-
       The Nimble version to download.
-      Examples: '0.16.2', '0.16.3'
-    required: true
+      Examples: '0.16.3', 'latest'
+    default: 'latest'
+    required: false
   nimble-install-directory:
     description: >-
       The Nimble installation directory.
