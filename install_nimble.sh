@@ -19,7 +19,9 @@ fetch_tags() {
     -H "Authorization: Bearer ${repo_token}" \
     -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/nim-lang/nimble/git/refs/tags |
     jq -r '.[].ref' |
-    sed -E 's:^refs/tags/v::'
+    sed -E 's:^refs/tags/v::' |
+    sed -E 's:^refs/tags/::' |
+    grep -E '^[0-9]+\.[0-9]+(\.[0-9]+)?$'
 }
 
 tag_regexp() {
@@ -33,6 +35,13 @@ tag_regexp() {
 
 latest_version() {
   sort -V | tail -n 1
+}
+
+print_available_versions() {
+  info "Available Nimble versions:"
+  fetch_tags | while read -r version; do
+    echo "  - $version"
+  done
 }
 
 # parse commandline args
@@ -75,9 +84,14 @@ fi
 
 cd "$parent_nimble_install_dir"
 
-# get exact version if stable
-if [[ "$nimble_version" = "stable" ]]; then
+# Print available versions
+# print_available_versions
+
+# get exact version
+if [[ "$nimble_version" = "latest" ]]; then
+  info "Finding latest version..."
   nimble_version=$(fetch_tags | latest_version)
+  info "Latest version is: $nimble_version"
 elif [[ "$nimble_version" =~ ^[0-9]+\.[0-9]+\.x$ ]] || [[ "$nimble_version" =~ ^[0-9]+\.x$ ]]; then
   nimble_version="$(fetch_tags | grep -E "$(tag_regexp "$nimble_version")" | latest_version)"
 fi
