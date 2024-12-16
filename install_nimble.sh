@@ -112,9 +112,9 @@ if [[ "$os" = "Windows" ]]; then
   info "Downloading from: ${download_url}"
   curl -sSL "${download_url}" > nimble.zip
   # Try the new structure (direct exe)
-  unzip -j -o nimble.zip "nimble.exe" -d "${nimble_install_dir}/bin" || \
+  unzip -j -o nimble.zip "nimble.exe" -d "${nimble_install_dir}/bin" ||
   # If that fails, try the old structure (nested exe)
-  unzip -j -o nimble.zip "*/nimble.exe" -d "${nimble_install_dir}/bin"
+    unzip -j -o nimble.zip "*/nimble.exe" -d "${nimble_install_dir}/bin"
   rm -f nimble.zip
 elif [[ "$os" = "macOS" || "$os" = "Darwin" ]]; then
   download_url="https://github.com/nim-lang/nimble/releases/download/v${nimble_version}/nimble-macosx_${arch}.tar.gz"
