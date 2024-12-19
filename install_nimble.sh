@@ -13,21 +13,24 @@ err() {
 }
 
 fetch_tags() {
-  info "Fetching tags..."
-  response=$(curl \
+  response=$(curl -sSL \
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: Bearer ${repo_token}" \
     -H "X-GitHub-Api-Version: 2022-11-28" \
     https://api.github.com/repos/nim-lang/nimble/git/refs/tags)
   
-  # Debug output
-  info "Raw API response:"
-  echo "$response"
-  
-  echo "$response" | jq -r 'if type == "array" then .[].ref else empty end' |
+  version=$(echo "$response" | jq -r 'if type == "array" then .[].ref else empty end' |
     sed -E 's:^refs/tags/v::' |
     sed -E 's:^refs/tags/::' |
-    grep -E '^[0-9]+\.[0-9]+(\.[0-9]+)?$'
+    grep -E '^[0-9]+\.[0-9]+(\.[0-9]+)?$' |
+    sort -V | tail -n1)
+    
+  if [[ -z "$version" ]]; then
+    err "Failed to extract version number"
+    exit 1
+  fi
+  
+  echo "$version"
 }
 
 tag_regexp() {
@@ -40,7 +43,16 @@ tag_regexp() {
 }
 
 latest_version() {
-  sort -V | tail -n 1
+  # Get the highest version using sort -V
+  version=$(sort -V | tail -n1)
+  
+  # Check if we got a version
+  if [[ -z "$version" ]]; then
+    err "No valid versions found"
+    exit 1
+  fi
+  
+  echo "$version"
 }
 
 print_available_versions() {
@@ -90,22 +102,17 @@ fi
 
 cd "$parent_nimble_install_dir"
 
-# Print available versions
-# print_available_versions
-
 # get exact version
 if [[ "$nimble_version" = "latest" ]]; then
   info "Finding latest version..."
-  echo "Available tags:"
-  fetch_tags
-  nimble_version=$(fetch_tags | latest_version)
+  nimble_version=$(fetch_tags)
   if [[ -z "$nimble_version" ]]; then
     err "Failed to determine latest version"
     exit 1
   fi
   info "Latest version is: $nimble_version"
 elif [[ "$nimble_version" =~ ^[0-9]+\.[0-9]+\.x$ ]] || [[ "$nimble_version" =~ ^[0-9]+\.x$ ]]; then
-  nimble_version="$(fetch_tags | grep -E "$(tag_regexp "$nimble_version")" | latest_version)"
+  nimble_version=$(fetch_tags | grep -E "$(tag_regexp "$nimble_version")" | latest_version)
 fi
 
 info "Installing nimble $nimble_version"
@@ -122,11 +129,11 @@ arch="x64"
 if [[ "$os" = "Windows" ]]; then
   download_url="https://github.com/nim-lang/nimble/releases/download/v${nimble_version}/nimble-windows_${arch}.zip"
   info "Downloading from: ${download_url}"
-
+  
   # Download SSL certificates for Windows
   info "Downloading SSL certificates..."
   curl -sSL "https://curl.se/ca/cacert.pem" -o "${nimble_install_dir}/bin/cacert.pem"
-
+  
   info "Downloading Nimble..."
   curl -sSL "${download_url}" > nimble.zip
   # Try the new structure (direct exe)
@@ -135,10 +142,14 @@ if [[ "$os" = "Windows" ]]; then
     unzip -j -o nimble.zip "*/nimble.exe" -d "${nimble_install_dir}/bin"
   rm -f nimble.zip
 elif [[ "$os" = "macOS" || "$os" = "Darwin" ]]; then
+  # Trim any whitespace from version number
+  nimble_version=$(echo "${nimble_version}" | tr -d '[:space:]')
   download_url="https://github.com/nim-lang/nimble/releases/download/v${nimble_version}/nimble-macosx_${arch}.tar.gz"
   info "Downloading from: ${download_url}"
   curl -sSL "${download_url}" | tar xvz -C "${nimble_install_dir}/bin"
 else
+  # Trim any whitespace from version number
+  nimble_version=$(echo "${nimble_version}" | tr -d '[:space:]')
   download_url="https://github.com/nim-lang/nimble/releases/download/v${nimble_version}/nimble-linux_${arch}.tar.gz"
   info "Downloading from: ${download_url}"
   curl -sSL "${download_url}" | tar xvz -C "${nimble_install_dir}/bin"
