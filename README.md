@@ -15,7 +15,7 @@ steps:
   - uses: actions/checkout@v4
   - uses: nim-lang/setup-nimble-action@v1
     with:
-      nimble-version: '0.16.4' # default is 'latest'
+      nimble-version: '0.16.4' # default is 'latest'. You could also use `nightly` to get #HEAD
       repo-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
