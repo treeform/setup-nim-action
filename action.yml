@@ -25,8 +25,8 @@ runs:
         unzip -q nim.zip
         mv nim-${{ inputs.nim-version }}/* .
         rmdir nim-${{ inputs.nim-version }}
-        echo "$nim_install_dir/bin" >> "$GITHUB_PATH"
-        echo "$HOME/.nimble/bin" >> "$GITHUB_PATH"
+        echo "$(cygpath -w "$nim_install_dir")/bin" >> "$GITHUB_PATH"
+        echo "$(cygpath -w "$HOME")/.nimble/bin" >> "$GITHUB_PATH"
 
     - name: Setup nim (macOS)
       if: runner.os == 'macOS'
