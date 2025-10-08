@@ -2,7 +2,7 @@ name: build
 on: [push, pull_request]
 
 jobs:
-  test-multi-versions:
+  test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
