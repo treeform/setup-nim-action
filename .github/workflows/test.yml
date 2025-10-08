@@ -13,11 +13,20 @@ on:
       - '*.md'
 
 jobs:
+  shfmt:
+    name: runner / shfmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: reviewdog/action-shfmt@v1
+        with:
+          shfmt_flags: -i 2 -sr -ci -d
+
   shellcheck:
     name: runner / shellcheck
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: reviewdog/action-shellcheck@v1
         with:
           github_token: ${{ secrets.github_token }}
@@ -32,19 +41,50 @@ jobs:
           - macOS-13
           - macOS-latest
         version:
-          - 0.16.2
-          - 0.16.3
-          - 0.16.4
-          - latest
+          - 2.0.x
+          - devel
+        exclude:
+          - os: windows-latest
+            version: devel
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: ./
         with:
-          nimble-version: ${{ matrix.version }}
+          nim-version: ${{ matrix.version }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Print Nim version
+        run: nim -v
       - name: Print Nimble version
         run: nimble -v
+      - name: Run build test
+        run: nimble install -Y nimjson
+      - name: Run command
+        run: nimjson -h
+
+  test-devel:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macOS-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./
+        with:
+          nim-version: devel
+          use-nightlies: true
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Print Nim version
+        run: nim -v
+      - name: Print Nimble version
+        run: nimble -v
+      - name: Run build test
+        run: nimble install -Y nimjson
+      - name: Run command
+        run: nimjson -h
 
   test-multi-versions:
     runs-on: ${{ matrix.os }}
@@ -53,18 +93,28 @@ jobs:
         os:
           - ubuntu-latest
         version:
-          - 0.16.2
-          - 0.16.3          
-          - latest
+          - 1.4.x
+          - 1.6.0
+          - 1.6.x
+          - 1.x
+          - 2.0.x
+          - 2.x
+          - stable
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: ./
         with:
-          nimble-version: ${{ matrix.version }}
+          nim-version: ${{ matrix.version }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Print Nim version
+        run: nim -v
       - name: Print Nimble version
         run: nimble -v
+      - name: Run build test
+        run: nimble install -Y nimjson
+      - name: Run command
+        run: nimjson -h
 
   test-parent-directory:
     runs-on: ${{ matrix.os }}
@@ -75,12 +125,18 @@ jobs:
           - windows-latest
           - macOS-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: ./
         with:
-          nimble-version: 0.16.3
+          nim-version: stable
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          parent-nimble-install-directory: ${{ runner.temp }}
+          parent-nim-install-directory: ${{ runner.temp }}
 
+      - name: Print Nim version
+        run: nim -v
       - name: Print Nimble version
         run: nimble -v
+      - name: Run build test
+        run: nimble install -Y nimjson
+      - name: Run command
+        run: nimjson -h
