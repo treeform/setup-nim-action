@@ -22,9 +22,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - uses: treeform/setup-nim-action@v1
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
+    - uses: treeform/setup-nim-action@v2
     - run: nimble test -y
 ```
 
