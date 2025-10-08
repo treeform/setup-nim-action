@@ -2,16 +2,6 @@
 
 set -eu
 
-move_nim_compiler() {
-  src_dir="$1"
-  dst_dir="$2"
-  if [[ -d "$dst_dir" ]]; then
-    echo "remove cached directory (path = $dst_dir)"
-    rm -rf "$dst_dir"
-  fi
-  mv "$src_dir" "$dst_dir"
-}
-
 # parse commandline args
 nim_version="2.2.4"
 nim_install_dir="$HOME/.nim_runtime"
@@ -34,20 +24,21 @@ done
 
 echo "install nim $nim_version"
 
+# prepare install directory
+mkdir -p "$nim_install_dir"
+
 # download nim compiler
 arch="x64"
 if [[ "$os" = Windows ]]; then
   download_url="https://nim-lang.org/download/nim-${nim_version}_${arch}.zip"
   curl -sSL "${download_url}" > nim.zip
-  unzip -q nim.zip
-  rm -f nim.zip
+  unzip -q nim.zip --strip-components=1 -d "$nim_install_dir" 
 elif [[ "$os" = macOS ]]; then
   # need to build compiler
   download_url="https://nim-lang.org/download/nim-${nim_version}.tar.xz"
   curl -sSL "${download_url}" > nim.tar.xz
-  tar xf nim.tar.xz
-  rm -f nim.tar.xz
-  cd "nim-${nim_version}"
+  tar xf nim.tar.xz --strip-components=1 -C "$nim_install_dir"
+  cd "$nim_install_dir"
   echo "build nim compiler"
   ./build.sh
   echo "build koch tool"
@@ -56,11 +47,8 @@ elif [[ "$os" = macOS ]]; then
   ./koch boot -d:release --skipUserCfg --skipParentCfg --hints:off
   echo "koch tools"
   ./koch tools --skipUserCfg --skipParentCfg --hints:off
-  cd ..
 else
   download_url="https://nim-lang.org/download/nim-${nim_version}-linux_${arch}.tar.xz"
   curl -sSL "${download_url}" > nim.tar.xz
-  tar xf nim.tar.xz
-  rm -f nim.tar.xz
+  tar xf nim.tar.xz --strip-components=1 -C "$nim_install_dir"
 fi
-move_nim_compiler "nim-${nim_version}" "${nim_install_dir}"
