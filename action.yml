@@ -71,6 +71,6 @@ runs:
       shell: bash
       run: nim -v
 
-    - name: Print nimble version
+    - name: Print nimby version
       shell: bash
-      run: nimble -v
+      run: nimby -v
