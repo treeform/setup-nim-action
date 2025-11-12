@@ -22,7 +22,7 @@ runs:
         chmod +x nimby.exe
         echo "Using Nimby to install Nim ${{ inputs.nim-version }}..."
         ./nimby.exe use "${{ inputs.nim-version }}"
-        cp nimby.exe /home/runner/.nimby/nim/bin/nimby.exe
+        cp nimby.exe $HOME/.nimby/nim/bin/nimby.exe
         echo "Adding Nim bin to PATH..."
         echo "$(cygpath -w "$HOME")\.nimby\nim\bin" >> "$GITHUB_PATH"
 
@@ -42,8 +42,8 @@ runs:
         chmod +x nimby
         echo "Using Nimby to install Nim ${{ inputs.nim-version }}..."
         ./nimby use "${{ inputs.nim-version }}"
-        cp nimby /home/runner/.nimby/nim/bin/nimby
-        chmod +x /home/runner/.nimby/nim/bin/nimby
+        cp nimby $HOME/.nimby/nim/bin/nimby
+        chmod +x $HOME/.nimby/nim/bin/nimby
         echo "Adding Nim bin to PATH..."
         echo "$HOME/.nimby/nim/bin" >> "$GITHUB_PATH"
 
@@ -57,8 +57,8 @@ runs:
         chmod +x nimby
         echo "Using Nimby to install Nim ${{ inputs.nim-version }}..."
         ./nimby use "${{ inputs.nim-version }}"
-        cp nimby /home/runner/.nimby/nim/bin/nimby
-        chmod +x /home/runner/.nimby/nim/bin/nimby
+        cp nimby $HOME/.nimby/nim/bin/nimby
+        chmod +x $HOME/.nimby/nim/bin/nimby
         echo "Adding Nim bin to PATH..."
         echo "$HOME/.nimby/nim/bin" >> "$GITHUB_PATH"
 
