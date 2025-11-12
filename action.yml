@@ -6,63 +6,61 @@ author: 'treeform'
 inputs:
   nim-version:
     description: >-
-      The Nim version to download and use. Example: 2.2.4
-    default: '2.2.4'
+      The Nim version to download and use. Example: 2.2.6
+    default: '2.2.6'
 
 runs:
   using: 'composite'
   steps:
-    - name: Setup nim (Windows)
+    - name: Setup Nim via Nimby (Windows)
       if: runner.os == 'Windows'
       shell: bash
       run: |
-        echo "install nim ${{ inputs.nim-version }}"
-        nim_install_dir="$HOME/.nim_runtime"
-        echo "nim install directory: $nim_install_dir"
-        mkdir -p "$nim_install_dir"
-        cd "$nim_install_dir"
-        curl -sSL "https://nim-lang.org/download/nim-${{ inputs.nim-version }}_x64.zip" > nim.zip
-        unzip -q nim.zip
-        mv nim-${{ inputs.nim-version }}/* .
-        rmdir nim-${{ inputs.nim-version }}
-        echo "$(cygpath -w "$nim_install_dir")/bin" >> "$GITHUB_PATH"
-        echo "$(cygpath -w "$HOME")/.nimble/bin" >> "$GITHUB_PATH"
+        set -e
+        echo "Downloading Nimby for Windows..."
+        curl -sSL -o nimby.exe "https://github.com/treeform/nimby/releases/download/0.1.6/nimby-Windows-X64.exe"
+        chmod +x nimby.exe
+        echo "Using Nimby to install Nim ${{ inputs.nim-version }}..."
+        ./nimby.exe use "${{ inputs.nim-version }}"
+        cp nimby.exe $HOME/.nimby/nim/bin/nimby.exe
+        echo "Adding Nim bin to PATH..."
+        echo "$(cygpath -w "$HOME")\.nimby\nim\bin" >> "$GITHUB_PATH"
 
-    - name: Setup nim (macOS)
+    - name: Setup Nim via Nimby (macOS)
       if: runner.os == 'macOS'
       shell: bash
       run: |
-        echo "install nim ${{ inputs.nim-version }}"
-        nim_install_dir="$HOME/.nim_runtime"
-        echo "nim install directory: $nim_install_dir"
-        mkdir -p "$nim_install_dir"
-        cd "$nim_install_dir"
-        curl -sSL "https://nim-lang.org/download/nim-${{ inputs.nim-version }}.tar.xz" > nim.tar.xz
-        tar xf nim.tar.xz --strip-components=1
-        echo "build nim compiler"
-        ./build.sh
-        echo "build koch tool"
-        ./bin/nim c --noNimblePath --skipUserCfg --skipParentCfg --hints:off koch
-        echo "koch boot"
-        ./koch boot -d:release --skipUserCfg --skipParentCfg --hints:off
-        echo "koch tools"
-        ./koch tools --skipUserCfg --skipParentCfg --hints:off
-        echo "$nim_install_dir/bin" >> "$GITHUB_PATH"
-        echo "$HOME/.nimble/bin" >> "$GITHUB_PATH"
+        set -e
+        arch="$(uname -m)"
+        if [ "$arch" = "arm64" ]; then
+          NIMBY_URL="https://github.com/treeform/nimby/releases/download/0.1.6/nimby-macOS-ARM64"
+        else
+          NIMBY_URL="https://github.com/treeform/nimby/releases/download/0.1.6/nimby-macOS-X64"
+        fi
+        echo "Downloading Nimby for macOS ($arch)..."
+        curl -sSL -o nimby "$NIMBY_URL"
+        chmod +x nimby
+        echo "Using Nimby to install Nim ${{ inputs.nim-version }}..."
+        ./nimby use "${{ inputs.nim-version }}"
+        cp nimby $HOME/.nimby/nim/bin/nimby
+        chmod +x $HOME/.nimby/nim/bin/nimby
+        echo "Adding Nim bin to PATH..."
+        echo "$HOME/.nimby/nim/bin" >> "$GITHUB_PATH"
 
-    - name: Setup nim (Linux)
+    - name: Setup Nim via Nimby (Linux)
       if: runner.os == 'Linux'
       shell: bash
       run: |
-        echo "install nim ${{ inputs.nim-version }}"
-        nim_install_dir="$HOME/.nim_runtime"
-        echo "nim install directory: $nim_install_dir"
-        mkdir -p "$nim_install_dir"
-        cd "$nim_install_dir"
-        curl -sSL "https://nim-lang.org/download/nim-${{ inputs.nim-version }}-linux_x64.tar.xz" > nim.tar.xz
-        tar xf nim.tar.xz --strip-components=1
-        echo "$nim_install_dir/bin" >> "$GITHUB_PATH"
-        echo "$HOME/.nimble/bin" >> "$GITHUB_PATH"
+        set -e
+        echo "Downloading Nimby for Linux..."
+        curl -sSL -o nimby "https://github.com/treeform/nimby/releases/download/0.1.6/nimby-Linux-X64"
+        chmod +x nimby
+        echo "Using Nimby to install Nim ${{ inputs.nim-version }}..."
+        ./nimby use "${{ inputs.nim-version }}"
+        cp nimby $HOME/.nimby/nim/bin/nimby
+        chmod +x $HOME/.nimby/nim/bin/nimby
+        echo "Adding Nim bin to PATH..."
+        echo "$HOME/.nimby/nim/bin" >> "$GITHUB_PATH"
 
     - name: Print nim directory
       shell: bash
@@ -73,6 +71,6 @@ runs:
       shell: bash
       run: nim -v
 
-    - name: Print nimble version
+    - name: Print nimby version
       shell: bash
-      run: nimble -v
+      run: nimby -v
