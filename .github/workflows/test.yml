@@ -25,7 +25,7 @@ jobs:
         run: nim -v
       - name: Print Nimby version
         run: nimby -v
-      - name: Print Nimble version
+      - name: Install jsony
         run: nimby install jsony
-      - name: Run command
+      - name: Compile jsony
         run: nim c jsony/src/jsony.nim
