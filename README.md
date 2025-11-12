@@ -22,7 +22,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - uses: treeform/setup-nim-action@v2
+    - uses: treeform/setup-nim-action@v3
     - run: nimble test -y
 ```
 
