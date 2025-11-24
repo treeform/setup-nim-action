@@ -18,7 +18,7 @@ runs:
       run: |
         set -e
         echo "Downloading Nimby for Windows..."
-        curl -sSL -o nimby.exe "https://github.com/treeform/nimby/releases/download/0.1.7/nimby-Windows-X64.exe"
+        curl -sSL -o nimby.exe "https://github.com/treeform/nimby/releases/download/0.1.13/nimby-Windows-X64.exe"
         chmod +x nimby.exe
         echo "Using Nimby to install Nim ${{ inputs.nim-version }}..."
         ./nimby.exe use "${{ inputs.nim-version }}"
@@ -33,9 +33,9 @@ runs:
         set -e
         arch="$(uname -m)"
         if [ "$arch" = "arm64" ]; then
-          NIMBY_URL="https://github.com/treeform/nimby/releases/download/0.1.7/nimby-macOS-ARM64"
+          NIMBY_URL="https://github.com/treeform/nimby/releases/download/0.1.13/nimby-macOS-ARM64"
         else
-          NIMBY_URL="https://github.com/treeform/nimby/releases/download/0.1.7/nimby-macOS-X64"
+          NIMBY_URL="https://github.com/treeform/nimby/releases/download/0.1.13/nimby-macOS-X64"
         fi
         echo "Downloading Nimby for macOS ($arch)..."
         curl -sSL -o nimby "$NIMBY_URL"
@@ -53,7 +53,7 @@ runs:
       run: |
         set -e
         echo "Downloading Nimby for Linux..."
-        curl -sSL -o nimby "https://github.com/treeform/nimby/releases/download/0.1.7/nimby-Linux-X64"
+        curl -sSL -o nimby "https://github.com/treeform/nimby/releases/download/0.1.13/nimby-Linux-X64"
         chmod +x nimby
         echo "Using Nimby to install Nim ${{ inputs.nim-version }}..."
         ./nimby use "${{ inputs.nim-version }}"
