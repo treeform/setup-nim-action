@@ -2,7 +2,7 @@
 
 ![Build Status](https://github.com/treeform/setup-nim-action/workflows/build/badge.svg)
 
-This action sets up a [Nim-lang](https://nim-lang.org/) environment in the most simple way.
+This action sets up a [Nim-lang](https://nim-lang.org/) environment using [Nimby](https://github.com/treeform/nimby).
 
 Originally forked from [jiro4989/setup-nim-action](https://github.com/jiro4989/setup-nim-action) but simplified.
 
@@ -22,8 +22,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - uses: treeform/setup-nim-action@v3
-    - run: nimble test -y
+    - uses: treeform/setup-nim-action@v5
+    - run: nimby -v
 ```
 
 Warning: `devel` or `stable` is not supported, exact released version is required.
