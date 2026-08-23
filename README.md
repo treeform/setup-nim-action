@@ -41,25 +41,24 @@ Refusing to create one inside package or Git checkout: /home/runner/work/myrepo/
 Run `nimby create` in the directory you want as the workspace.
 ```
 
-Create the workspace somewhere outside the checkout and install into it:
+Create the workspace in the *parent* of the checkout, so your repository sits
+inside it alongside its dependencies:
 
 ```
     steps:
     - uses: actions/checkout@v5
     - uses: treeform/setup-nim-action@v6
 
-    - name: Create a Nimby workspace
-      shell: bash
-      run: |
-        mkdir -p "${{ runner.temp }}/workspace"
-        cd "${{ runner.temp }}/workspace"
-        nimby create
-
     - name: Install dependencies
       shell: bash
-      working-directory: ${{ runner.temp }}/workspace
-      run: nimby install jsony
+      run: |
+        cd ..
+        nimby create
+        nimby install jsony
+
+    - run: nim c tests/tests.nim
 ```
 
-Your own checkout is a package like any other, so put it in the workspace too
-when you need to build it there.
+The parent matters. Nim finds `nim.cfg` by walking up from the file it is
+compiling, so a workspace somewhere else, such as under `RUNNER_TEMP`, will
+install the packages but your own build will not see them.
