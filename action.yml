@@ -6,8 +6,8 @@ author: 'treeform'
 inputs:
   nim-version:
     description: >-
-      The Nim version to download and use. Example: 2.2.10
-    default: '2.2.10'
+      The Nim version to download and use. Example: 2.2.12
+    default: '2.2.12'
 
 runs:
   using: 'composite'
