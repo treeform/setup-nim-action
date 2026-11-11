@@ -16,13 +16,15 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        version: [2.2.12, 2.2.10, 2.2.6, 2.2.4, 2.0.16]
+        version: [2.4.0, 2.2.14, 2.2.12, 2.2.10, 2.2.6, 2.2.4, 2.0.16]
 
     runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v5
     - uses: treeform/setup-nim-action@v6
+      with:
+        nim-version: ${{ matrix.version }}
     - run: nimby -v
 ```
 
